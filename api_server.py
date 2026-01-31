@@ -548,47 +548,15 @@ def favicon():
 def robots():
     return Response("User-agent: *\nAllow: /\nDisallow: /admin/", mimetype='text/plain')
 
-# ========== VERCEL SERVERLESS HANDLER ==========
-# This is required for Vercel serverless functions
+# ========== VERCEL COMPATIBILITY ==========
+# Vercel requires this variable name
+application = app
+
+# Optional: Simple handler if needed
 def handler(event, context):
-    """Vercel serverless handler."""
-    from werkzeug.wrappers import Request
-    from werkzeug.datastructures import Headers
-    
-    # Convert Vercel event to Werkzeug request
-    headers = Headers()
-    for key, value in (event.get('headers') or {}).items():
-        headers.add(key, value)
-    
-    request = Request(
-        environ={
-            'REQUEST_METHOD': event.get('httpMethod', 'GET'),
-            'PATH_INFO': event.get('path', '/'),
-            'QUERY_STRING': event.get('queryStringParameters', {}),
-            'wsgi.input': event.get('body', ''),
-            'CONTENT_TYPE': headers.get('Content-Type', ''),
-            'CONTENT_LENGTH': len(event.get('body', '') or ''),
-            'SERVER_NAME': 'vercel',
-            'SERVER_PORT': '443',
-            'wsgi.url_scheme': 'https',
-            'wsgi.errors': sys.stderr,
-            'wsgi.version': (1, 0),
-            'wsgi.multithread': False,
-            'wsgi.multiprocess': True,
-            'wsgi.run_once': True,
-        }
-    )
-    
-    # Process request
-    with app.request_context(request.environ):
-        response = app.full_dispatch_request()
-    
-    # Convert response to Vercel format
-    return {
-        'statusCode': response.status_code,
-        'headers': dict(response.headers),
-        'body': response.get_data(as_text=True)
-    }
+    """Vercel serverless handler - Simplified version."""
+    # Let Flask handle everything
+    return application
 
 # ========== LOCAL DEVELOPMENT ==========
 if __name__ == '__main__':
