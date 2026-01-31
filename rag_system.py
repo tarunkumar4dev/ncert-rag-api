@@ -725,7 +725,7 @@ class NCERTRAGSystem:
         Args:
             question: User's question
             use_cache: Whether to use cache
-            
+        
         Returns:
             Dictionary with answer and metadata
         """
